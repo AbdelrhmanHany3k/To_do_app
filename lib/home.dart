@@ -18,19 +18,26 @@ class Home extends StatelessWidget {
       ),
       body: Column(
         children: [
-          CalendarTimeline(
-            initialDate: DateTime.now(),
-            firstDate: DateTime.now().subtract(Duration(days: 356)),
-            lastDate: DateTime.now().add(Duration(days: 356)),
-            onDateSelected: (date) => print(date),
-            leftMargin: 20,
-            monthColor: Colors.blueGrey,
-            dayColor: Colors.teal[200],
-            activeDayColor: Colors.white,
-            activeBackgroundDayColor: Colors.redAccent[100],
-            selectableDayPredicate: (date) => date.day != 23,
-            locale: 'en_ISO',
-          )
+          Stack(
+            children: [
+              Container(
+                color: Colors.blue,
+                height: 60,
+              ),
+              CalendarTimeline(
+                initialDate: DateTime.now(),
+                firstDate: DateTime.now().subtract(Duration(days: 356)),
+                lastDate: DateTime.now().add(Duration(days: 356)),
+                onDateSelected: (date) => print(date),
+                leftMargin: 20,
+                monthColor: Colors.black,
+                dayColor: Colors.black54,
+                activeDayColor: Colors.blue,
+                activeBackgroundDayColor: Colors.white,
+                locale: 'en_ISO',
+              )
+            ],
+          ),
         ],
       ),
     );
