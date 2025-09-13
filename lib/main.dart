@@ -1,13 +1,23 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:to_do_app/home.dart';
+import 'package:to_do_app/splash_screen.dart';
 
-main(){
-  runApp(MyApp());
+void main() {
+  runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget{
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
-    throw UnimplementedError();
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      initialRoute: SplashScreen.routename,
+      routes: {
+        Home.routename: (context) => const Home(),
+        SplashScreen.routename: (context) => const SplashScreen(),
+      },
+    );
   }
 }
