@@ -1,45 +1,81 @@
-import 'package:calendar_timeline/calendar_timeline.dart';
 import 'package:flutter/material.dart';
+import 'package:to_do_app/AddTaskBottomSheet.dart';
+import 'package:to_do_app/tabs/settings.dart';
+import 'package:to_do_app/tabs/tasks.dart';
 
-class Home extends StatelessWidget {
-  static const String routename="home";
-  const Home({super.key});
+class Home extends StatefulWidget {
+  static const String routename = "home";
+
+  @override
+  State<Home> createState() => _HomeState();
+}
+
+class _HomeState extends State<Home> {
+  int selectedIndex = 0;
+
+  List<Widget> tabs = [
+    Tasks(),
+    Settings(),
+  ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBody: true,
+      backgroundColor: Color(0xFFDFECDB),
       appBar: AppBar(
-        title: Text("ToDo",style: TextStyle(fontSize: 22,
-            fontWeight: FontWeight.bold,
-            color: Colors.white),
+        title: Text(
+          "ToDo",
+          style: TextStyle(
+              fontSize: 22, fontWeight: FontWeight.bold, color: Colors.white),
         ),
         backgroundColor: Colors.blue,
-        toolbarHeight:100,
       ),
-      body: Column(
-        children: [
-          Stack(
-            children: [
-              Container(
-                color: Colors.blue,
-                height: 60,
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          showModalBottomSheet(context: context, builder: (context) {
+            return Padding(
+              padding:  EdgeInsets.only(
+                bottom: MediaQuery.of(context).viewInsets.bottom
               ),
-              CalendarTimeline(
-                initialDate: DateTime.now(),
-                firstDate: DateTime.now().subtract(Duration(days: 356)),
-                lastDate: DateTime.now().add(Duration(days: 356)),
-                onDateSelected: (date) => print(date),
-                leftMargin: 20,
-                monthColor: Colors.black,
-                dayColor: Colors.black54,
-                activeDayColor: Colors.blue,
-                activeBackgroundDayColor: Colors.white,
-                locale: 'en_ISO',
-              )
-            ],
-          ),
-        ],
+              child: Addtaskbottomsheet(),
+            );
+          },);
+        },
+        shape: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(35),
+          borderSide: BorderSide(color: Colors.transparent),
+        ),
+        backgroundColor: Colors.blue,
+        child: Icon(Icons.add, color: Colors.white),
       ),
+      bottomNavigationBar: BottomAppBar(
+        color: Colors.white,
+        shape: CircularNotchedRectangle(),
+        notchMargin: 8,
+        padding: EdgeInsets.zero,
+        child: BottomNavigationBar(
+          currentIndex: selectedIndex,
+          onTap: (value) {
+            setState(() {
+              selectedIndex = value;
+            });
+          },
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          selectedItemColor: Colors.blue,
+          unselectedItemColor: Colors.grey,
+          showSelectedLabels: false,
+          showUnselectedLabels: false,
+          iconSize: 30,
+          items: [
+            BottomNavigationBarItem(icon: Icon(Icons.list), label: ""),
+            BottomNavigationBarItem(icon: Icon(Icons.settings), label: "")
+          ],
+        ),
+      ),
+      body: tabs[selectedIndex],
     );
   }
 }
