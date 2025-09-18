@@ -1,24 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:to_do_app/Task_model.dart';
+import 'package:to_do_app/Themeing/AppColors.dart';
 import 'package:to_do_app/firebasefuntions.dart';
 
 class Addtaskbottomsheet extends StatefulWidget {
-   Addtaskbottomsheet({super.key});
+  const Addtaskbottomsheet({super.key});
 
   @override
   State<Addtaskbottomsheet> createState() => _AddtaskbottomsheetState();
 }
 
 class _AddtaskbottomsheetState extends State<Addtaskbottomsheet> {
-  var titleController=TextEditingController();
-  var descriptionController=TextEditingController();
-
+  final titleController = TextEditingController();
+  final descriptionController = TextEditingController();
   DateTime? selectedDate;
 
   void _pickDate() async {
     DateTime? picked = await showDatePicker(
       context: context,
-      initialDate: selectedDate,
+      initialDate: selectedDate ?? DateTime.now(),
       firstDate: DateTime(2000),
       lastDate: DateTime(2100),
     );
@@ -30,8 +30,31 @@ class _AddtaskbottomsheetState extends State<Addtaskbottomsheet> {
     }
   }
 
+  void _addTask() {
+    if (titleController.text.trim().isEmpty ||
+        descriptionController.text.trim().isEmpty ||
+        selectedDate == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Please fill all fields")),
+      );
+      return;
+    }
+
+    TaskModel model = TaskModel(
+      title: titleController.text.trim(),
+      description: descriptionController.text.trim(),
+      Date: DateUtils.dateOnly(selectedDate!).millisecondsSinceEpoch,
+    );
+
+    FireBaseFunctions.addtask(model).then((value) {
+      Navigator.pop(context);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    final textStyle = Theme.of(context).textTheme.bodyLarge;
+
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -39,25 +62,26 @@ class _AddtaskbottomsheetState extends State<Addtaskbottomsheet> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              "Add New Task",
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
+            Text("Add New Task", style: textStyle),
             const SizedBox(height: 16),
             TextFormField(
               controller: titleController,
-              decoration: const InputDecoration(
+              style: textStyle, // يغير لون النص حسب الثيم
+              decoration: InputDecoration(
                 labelText: "Task Title",
-                border: OutlineInputBorder(),
+                labelStyle: textStyle, // يغير لون الليبل حسب الثيم
+                border: const OutlineInputBorder(),
               ),
             ),
             const SizedBox(height: 12),
             TextFormField(
               controller: descriptionController,
               maxLines: 2,
-              decoration: const InputDecoration(
+              style: textStyle,
+              decoration: InputDecoration(
                 labelText: "Task Description",
-                border: OutlineInputBorder(),
+                labelStyle: textStyle,
+                border: const OutlineInputBorder(),
               ),
             ),
             const SizedBox(height: 12),
@@ -70,26 +94,21 @@ class _AddtaskbottomsheetState extends State<Addtaskbottomsheet> {
                   Text(
                     selectedDate == null
                         ? "Select Date"
-                        : "$selectedDate".substring(0,10),
-                    style: const TextStyle(fontSize: 16),
+                        : "${selectedDate!.year}-${selectedDate!.month}-${selectedDate!.day}",
+                    style: textStyle,
                   ),
                 ],
               ),
             ),
             const SizedBox(height: 16),
             ElevatedButton(
-              onPressed: () {
-                TaskModel model=TaskModel(title: titleController.text,
-                    description: descriptionController.text,
-                    Date: selectedDate!.millisecondsSinceEpoch);
-                FireBaseFunctions.addtask(model).then((value) => Navigator.pop,);
-              },
+              onPressed: _addTask,
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue,
                 minimumSize: const Size(double.infinity, 50),
+                backgroundColor: Appcolors.primarycolor
               ),
-              child: const Text("Add Task",style: TextStyle(color: Colors.white),),
-            )
+              child:  Text("Add Task",style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontSize: 15),),
+            ),
           ],
         ),
       ),

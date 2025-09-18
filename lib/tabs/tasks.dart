@@ -1,11 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:calendar_timeline/calendar_timeline.dart';
 import 'package:to_do_app/TaskItem.dart';
-import 'package:to_do_app/Task_model.dart';
+import 'package:to_do_app/Themeing/AppColors.dart';
 import 'package:to_do_app/firebasefuntions.dart';
 
-class Tasks extends StatelessWidget {
-  const Tasks({super.key});
+class Tasks extends StatefulWidget {
+   Tasks({super.key});
+
+  @override
+  State<Tasks> createState() => _TasksState();
+}
+
+class _TasksState extends State<Tasks> {
+   DateTime dateTime=DateTime.now();
 
   @override
   Widget build(BuildContext context) {
@@ -14,14 +21,17 @@ class Tasks extends StatelessWidget {
         Stack(
           children: [
             Container(
-              color: Colors.blue,
+              color: Appcolors.primarycolor,
               height: 50,
             ),
             CalendarTimeline(
-              initialDate: DateTime.now(),
+              initialDate: dateTime,
               firstDate: DateTime.now().subtract(const Duration(days: 356)),
               lastDate: DateTime.now().add(const Duration(days: 356)),
-              onDateSelected: (date) => print(date),
+              onDateSelected: (date){
+                dateTime=date;
+                setState(() {});
+              },
               leftMargin: 20,
               monthColor: Colors.black,
               dayColor: Colors.blue,
@@ -34,7 +44,7 @@ class Tasks extends StatelessWidget {
         const SizedBox(height: 24),
         Expanded(
           child: StreamBuilder(
-            stream: FireBaseFunctions.gettask(),
+            stream: FireBaseFunctions.gettask(dateTime),
             builder: (context, snapshot) {
               // 1- لسا بتحميل
               if (snapshot.connectionState == ConnectionState.waiting) {
@@ -43,15 +53,15 @@ class Tasks extends StatelessWidget {
 
               // 2- لو حصل ايرور
               if (snapshot.hasError) {
-                return const Center(
-                  child: Text("Something went wrong!"),
+                return  Center(
+                  child: Text("Something went wrong!",style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontSize: 20),),
                 );
               }
 
               // 3- لو مفيش داتا أو فاضية
               if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                return const Center(
-                  child: Text("No tasks available"),
+                return  Center(
+                  child: Text("No tasks available",style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontSize: 20),),
                 );
               }
 

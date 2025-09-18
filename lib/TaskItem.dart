@@ -1,68 +1,109 @@
 import 'package:flutter/material.dart';
-import 'Task_model.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:to_do_app/Edit%20task.dart';
+import 'package:to_do_app/Task_model.dart';
+import 'package:to_do_app/firebasefuntions.dart';
 
 class TaskItem extends StatelessWidget {
   final TaskModel task;
 
   const TaskItem({super.key, required this.task});
 
+  void _markAsDone(BuildContext context) async {
+    task.isdone = true;
+    await FireBaseFunctions.updateTask(task);
+  }
+
+  void _deleteTask(BuildContext context) async {
+    await FireBaseFunctions.deleteTask(task.id);
+  }
+
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Container(
-      padding: EdgeInsets.all(12),
-      margin: EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(15),
-      ),
-      child: Row(
-        children: [
-          Container(
-            color: Colors.blue,
-            height: 90,
-            width: 5,
-          ),
-          SizedBox(width: MediaQuery.sizeOf(context).width * .04),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  task.title, // جاي من الفايربيز
-                  style: TextStyle(
-                    color: Colors.blue,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 25,
-                  ),
-                ),
-                Text(
-                  task.description, // جاي من الفايربيز
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 18,
-                  ),
-                ),
-              ],
+      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      child: Slidable(
+        key: ValueKey(task.id),
+        startActionPane: ActionPane(
+          motion: const DrawerMotion(),
+          children: [
+            SlidableAction(
+              onPressed: (context) => _deleteTask(context),
+              backgroundColor: Colors.red,
+              foregroundColor: Colors.white,
+              icon: Icons.delete,
+              label: 'Delete',
+              flex: 3,
             ),
-          ),
-          IconButton(
-            onPressed: () {
-              // هنا ممكن نغير حالة التاسك مثلاً "تم"
-            },
-            icon: Icon(
-              Icons.done,
-              color: Colors.white,
-            ),
-            style: ElevatedButton.styleFrom(
-              padding: EdgeInsets.zero,
-              minimumSize: Size(80, 40),
+            SlidableAction(
+              onPressed: (context) {
+                Navigator.pushNamed(
+                  context,
+                  EditTaskScreen.routename,
+                  arguments: task,
+                );
+              },
               backgroundColor: Colors.blue,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
+              foregroundColor: Colors.white,
+              icon: Icons.edit,
+              flex: 2,
             ),
+          ],
+        ),
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: theme.cardColor, // خلفية حسب الثيم
+            borderRadius: BorderRadius.circular(12),
           ),
-        ],
+          child: Row(
+            children: [
+              IconButton(
+                icon: Icon(
+                  task.isdone ? Icons.check_circle : Icons.circle_outlined,
+                  color: task.isdone ? Colors.green : theme.hintColor,
+                ),
+                onPressed: () => _markAsDone(context),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      task.title,
+                      style: theme.textTheme.bodyLarge?.copyWith(
+                        decoration: task.isdone
+                            ? TextDecoration.lineThrough
+                            : TextDecoration.none,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      task.description,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: theme.hintColor, // لون يتغير حسب الثيم
+                        decoration: task.isdone
+                            ? TextDecoration.lineThrough
+                            : TextDecoration.none,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Text(
+                "${DateTime.fromMillisecondsSinceEpoch(task.Date).day}/"
+                    "${DateTime.fromMillisecondsSinceEpoch(task.Date).month}/"
+                    "${DateTime.fromMillisecondsSinceEpoch(task.Date).year}",
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: theme.hintColor,
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

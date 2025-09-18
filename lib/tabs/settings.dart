@@ -1,68 +1,58 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:to_do_app/provider.dart';
 
-class Settings extends StatefulWidget {
+class Settings extends StatelessWidget {
   const Settings({super.key});
 
   @override
-  State<Settings> createState() => _SettingsState();
-}
-
-class _SettingsState extends State<Settings> {
-  String selectedLanguage = "English";
-  String selectedMode = "Light";
-
-  @override
   Widget build(BuildContext context) {
+    var themeProvider = Provider.of<ThemeProvider>(context);
+
     return Container(
-      color: Color(0xFFDFECDB),
-      padding: EdgeInsets.all(16),
+      color: Theme.of(context).scaffoldBackgroundColor,
+      padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           Text("Settings",
-              style: TextStyle(
-                  fontSize: 22, fontWeight: FontWeight.bold, color: Colors.blue)),
-          SizedBox(height: 30),
-
-          // Language
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text("Language",
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-              DropdownButton<String>(
-                value: selectedLanguage,
-                items: [
-                  DropdownMenuItem(value: "English", child: Text("English")),
-                  DropdownMenuItem(value: "Arabic", child: Text("Arabic")),
-                ],
-                onChanged: (value) {
-                  setState(() {
-                    selectedLanguage = value!;
-                  });
-                },
-              ),
-            ],
-          ),
-          SizedBox(height: 30),
-
-          // Mode
+              style: Theme.of(context).textTheme.bodyLarge),
+          const SizedBox(height: 30),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text("Mode",
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodyLarge
+                      ?.copyWith(fontSize: 18)),
               DropdownButton<String>(
-                value: selectedMode,
+                dropdownColor: Theme.of(context).cardColor, // لون الليستة حسب الثيم
+                value: themeProvider.themeMode == ThemeMode.light
+                    ? "Light"
+                    : "Dark",
+                style: Theme.of(context).textTheme.bodyLarge,
                 items: [
-                  DropdownMenuItem(value: "Light", child: Text("Light")),
-                  DropdownMenuItem(value: "Dark", child: Text("Dark")),
+                  DropdownMenuItem(
+                    value: "Light",
+                    child: Text(
+                      "Light",
+                      style: Theme.of(context).textTheme.bodyLarge,
+                    ),
+                  ),
+                  DropdownMenuItem(
+                    value: "Dark",
+                    child: Text(
+                      "Dark",
+                      style: Theme.of(context).textTheme.bodyLarge,
+                    ),
+                  ),
                 ],
                 onChanged: (value) {
-                  setState(() {
-                    selectedMode = value!;
-                  });
+                  if (value != null) {
+                    themeProvider.changeTheme(value);
+                  }
                 },
               ),
             ],

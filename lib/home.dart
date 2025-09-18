@@ -22,54 +22,54 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     return Scaffold(
       extendBody: true,
-      backgroundColor: Color(0xFFDFECDB),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: Text(
           "ToDo",
-          style: TextStyle(
-              fontSize: 22, fontWeight: FontWeight.bold, color: Colors.white),
         ),
-        backgroundColor: Colors.blue,
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          showModalBottomSheet(context: context, builder: (context) {
-            return Padding(
-              padding:  EdgeInsets.only(
-                bottom: MediaQuery.of(context).viewInsets.bottom
-              ),
-              child: Addtaskbottomsheet(),
-            );
-          },);
+          showModalBottomSheet(
+            isScrollControlled: true,
+            context: context,
+            builder: (context) {
+              return Padding(
+                padding: EdgeInsets.only(
+                  bottom: MediaQuery.of(context).viewInsets.bottom,
+                ),
+                child: Addtaskbottomsheet(),
+              );
+            },
+          );
         },
         shape: OutlineInputBorder(
           borderRadius: BorderRadius.circular(35),
-          borderSide: BorderSide(color: Colors.transparent),
+          borderSide: const BorderSide(color: Colors.transparent),
         ),
-        backgroundColor: Colors.blue,
-        child: Icon(Icons.add, color: Colors.white),
+        backgroundColor: Theme.of(context).primaryColor,
+        child: const Icon(Icons.add, color: Colors.white),
       ),
       bottomNavigationBar: BottomAppBar(
-        color: Colors.white,
-        shape: CircularNotchedRectangle(),
+        shape: const CircularNotchedRectangle(), // القطع حوالين الـ FAB
         notchMargin: 8,
         padding: EdgeInsets.zero,
         child: BottomNavigationBar(
+          backgroundColor: Colors
+              .transparent, // عشان الـ notch يبان وميبقاش فيه طبقة تغطيه
+          elevation: 0,
           currentIndex: selectedIndex,
           onTap: (value) {
             setState(() {
               selectedIndex = value;
             });
           },
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          selectedItemColor: Colors.blue,
-          unselectedItemColor: Colors.grey,
+
           showSelectedLabels: false,
           showUnselectedLabels: false,
           iconSize: 30,
-          items: [
+          items: const [
             BottomNavigationBarItem(icon: Icon(Icons.list), label: ""),
             BottomNavigationBarItem(icon: Icon(Icons.settings), label: "")
           ],
