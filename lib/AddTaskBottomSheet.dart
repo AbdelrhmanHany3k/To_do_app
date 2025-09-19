@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:to_do_app/Task_model.dart';
 import 'package:to_do_app/Themeing/AppColors.dart';
 import 'package:to_do_app/firebasefuntions.dart';
+import 'package:to_do_app/nofication.dart';
 
 class Addtaskbottomsheet extends StatefulWidget {
   const Addtaskbottomsheet({super.key});
@@ -30,7 +31,7 @@ class _AddtaskbottomsheetState extends State<Addtaskbottomsheet> {
     }
   }
 
-  void _addTask() {
+  void _addTask() async {
     if (titleController.text.trim().isEmpty ||
         descriptionController.text.trim().isEmpty ||
         selectedDate == null) {
@@ -46,9 +47,43 @@ class _AddtaskbottomsheetState extends State<Addtaskbottomsheet> {
       Date: DateUtils.dateOnly(selectedDate!).millisecondsSinceEpoch,
     );
 
-    FireBaseFunctions.addtask(model).then((value) {
+    final notification = NotificationService();
+
+    // إشعار يشتغل حتى لو النت مقفول
+    if (DateUtils.isSameDay(selectedDate, DateTime.now())) {
+      notification.showTaskNotification(
+        id: model.Date.hashCode,
+        title: "Today's Task",
+        body: model.title,
+      );
+    } else {
+      final scheduledDate = DateTime(
+        selectedDate!.year,
+        selectedDate!.month,
+        selectedDate!.day,
+        6,
+      );
+
+      notification.scheduleTaskNotification(
+        id: model.Date.hashCode,
+        title: "Upcoming Task",
+        body: model.title,
+        scheduledDate: scheduledDate,
+      );
+    }
+
+    try {
+      await FireBaseFunctions.addtask(model);
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Saved locally, sync later")),
+      );
+    }
+
+    // يقفل الـBottomSheet في كل الحالات
+    if (mounted) {
       Navigator.pop(context);
-    });
+    }
   }
 
   @override
@@ -66,10 +101,10 @@ class _AddtaskbottomsheetState extends State<Addtaskbottomsheet> {
             const SizedBox(height: 16),
             TextFormField(
               controller: titleController,
-              style: textStyle, // يغير لون النص حسب الثيم
+              style: textStyle,
               decoration: InputDecoration(
                 labelText: "Task Title",
-                labelStyle: textStyle, // يغير لون الليبل حسب الثيم
+                labelStyle: textStyle,
                 border: const OutlineInputBorder(),
               ),
             ),
@@ -105,9 +140,15 @@ class _AddtaskbottomsheetState extends State<Addtaskbottomsheet> {
               onPressed: _addTask,
               style: ElevatedButton.styleFrom(
                 minimumSize: const Size(double.infinity, 50),
-                backgroundColor: Appcolors.primarycolor
+                backgroundColor: Appcolors.primarycolor,
               ),
-              child:  Text("Add Task",style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontSize: 15),),
+              child: Text(
+                "Add Task",
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyLarge
+                    ?.copyWith(fontSize: 15),
+              ),
             ),
           ],
         ),

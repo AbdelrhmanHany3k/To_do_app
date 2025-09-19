@@ -133,8 +133,19 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
                     widget.task.Date = DateUtils.dateOnly(selectedDate)
                         .millisecondsSinceEpoch;
 
-                    await FireBaseFunctions.updateTask(widget.task);
-                    Navigator.pop(context);
+                    try {
+                      await FireBaseFunctions.updateTask(widget.task);
+                    } catch (e) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text("Changes saved locally, sync later"),
+                        ),
+                      );
+                    }
+
+                    if (mounted) {
+                      Navigator.pop(context);
+                    }
                   },
                   child: const Text("Save Changes"),
                 ),

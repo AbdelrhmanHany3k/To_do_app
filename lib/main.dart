@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -6,6 +7,7 @@ import 'package:to_do_app/Task_model.dart';
 import 'package:to_do_app/Themeing/MyTheme.dart';
 import 'package:to_do_app/firebase_options.dart';
 import 'package:to_do_app/home.dart';
+import 'package:to_do_app/nofication.dart';
 import 'package:to_do_app/provider.dart';
 import 'package:to_do_app/splash_screen.dart';
 
@@ -14,6 +16,9 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  await NotificationService.init(); // ✅ تهيئة الإشعارات
+  await FirebaseFirestore.instance.disableNetwork();
+
   runApp(
     ChangeNotifierProvider(
       create: (_) => ThemeProvider(),
