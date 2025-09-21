@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:calendar_timeline/calendar_timeline.dart';
 import 'package:to_do_app/TaskItem.dart';
 import 'package:to_do_app/Themeing/AppColors.dart';
-import 'package:to_do_app/firebasefuntions.dart';
+import 'package:to_do_app/firebase/firebasefuntions.dart';
 
 class Tasks extends StatefulWidget {
    Tasks({super.key});

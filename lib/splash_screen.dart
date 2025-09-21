@@ -2,7 +2,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:to_do_app/home.dart';
-import 'package:to_do_app/provider.dart';
+import 'package:to_do_app/login/Signin.dart';
+import 'package:to_do_app/providers/Provider_auth.dart';
+import 'package:to_do_app/providers/provider_theme.dart';
 
 class SplashScreen extends StatefulWidget {
   static const String routename = "splash";
@@ -17,7 +19,13 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     super.initState();
     Future.delayed(const Duration(seconds: 3), () {
-      Navigator.pushReplacementNamed(context, Home.routename);
+      var authProvider = Provider.of<ProviderAuth>(context, listen: false);
+
+      if (authProvider.firebaseuser != null) {
+        Navigator.pushReplacementNamed(context, Home.routename);
+      } else {
+        Navigator.pushReplacementNamed(context, LoginScreen.routename);
+      }
     });
   }
 

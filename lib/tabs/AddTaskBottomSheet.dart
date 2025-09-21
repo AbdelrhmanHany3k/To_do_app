@@ -1,7 +1,8 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:to_do_app/Task_model.dart';
+import 'package:to_do_app/models/Task_model.dart';
 import 'package:to_do_app/Themeing/AppColors.dart';
-import 'package:to_do_app/firebasefuntions.dart';
+import 'package:to_do_app/firebase/firebasefuntions.dart';
 import 'package:to_do_app/nofication.dart';
 
 class Addtaskbottomsheet extends StatefulWidget {
@@ -42,6 +43,7 @@ class _AddtaskbottomsheetState extends State<Addtaskbottomsheet> {
     }
 
     TaskModel model = TaskModel(
+      userId: FirebaseAuth.instance.currentUser?.uid ?? "",
       title: titleController.text.trim(),
       description: descriptionController.text.trim(),
       Date: DateUtils.dateOnly(selectedDate!).millisecondsSinceEpoch,

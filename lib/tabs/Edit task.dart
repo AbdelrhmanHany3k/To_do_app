@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:to_do_app/Task_model.dart';
-import 'package:to_do_app/firebasefuntions.dart';
+import 'package:to_do_app/models/Task_model.dart';
+import 'package:to_do_app/firebase/firebasefuntions.dart';
 
 class EditTaskScreen extends StatefulWidget {
   final TaskModel task;

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:to_do_app/Edit%20task.dart';
-import 'package:to_do_app/Task_model.dart';
-import 'package:to_do_app/firebasefuntions.dart';
+import 'package:to_do_app/tabs/Edit%20task.dart';
+import 'package:to_do_app/models/Task_model.dart';
+import 'package:to_do_app/firebase/firebasefuntions.dart';
 
 class TaskItem extends StatelessWidget {
   final TaskModel task;
