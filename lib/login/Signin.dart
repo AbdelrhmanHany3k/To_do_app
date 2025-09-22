@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:to_do_app/firebase/firebasefuntions.dart';
@@ -9,70 +8,101 @@ import 'package:to_do_app/providers/Provider_auth.dart';
 class LoginScreen extends StatelessWidget {
   static const String routename = "j";
 
-  // Controllers
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
   LoginScreen({Key? key}) : super(key: key);
 
+  final _formKey = GlobalKey<FormState>();
+
   @override
   Widget build(BuildContext context) {
-    var pro=Provider.of<ProviderAuth>(context);
+    var pro = Provider.of<ProviderAuth>(context);
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
         title: const Text('Login Screen'),
       ),
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            TextField(
-              controller: emailController,
-              keyboardType: TextInputType.emailAddress,
-              decoration: const InputDecoration(
-                labelText: 'Email',
-              ),
-            ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: passwordController,
-              keyboardType: TextInputType.text,
-              obscureText: true,
-              decoration: const InputDecoration(
-                labelText: 'Password',
-              ),
-            ),
-            const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: () {
-                FireBaseFunctions.signin(
-                    emailController.text, passwordController.text,
-
-                    onSuccess: (label) {
-                      pro.inituser();
-                     Navigator.pushNamedAndRemoveUntil(
-                      context, Home.routename, (route) => false,
-                      arguments: label);
+        child: Form(
+          key: _formKey,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              TextFormField(
+                controller: emailController,
+                keyboardType: TextInputType.emailAddress,
+                decoration: const InputDecoration(
+                  labelText: 'Email',
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return "Please enter your email";
+                  }
+                  final RegExp emailRegex =
+                  RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+                  if (!emailRegex.hasMatch(value)) {
+                    return "Enter a valid email";
+                  }
+                  return null;
                 },
-                    onError: (error) {
-                  showDialog(
-                    context: context,
-                    builder: (context) => AlertDialog(
-                      title: Text("error"),
-                      content: Text(error.toString()),
-                      actions: [
-                        ElevatedButton(
-                            onPressed: () => Navigator.pop(context),
-                            child: Text("OK"))
-                      ],
-                    ),
-                  );
-                });
-              },
-              child: const Text('Login'),
-            ),
-          ],
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: passwordController,
+                keyboardType: TextInputType.text,
+                obscureText: true,
+                decoration: const InputDecoration(
+                  labelText: 'Password',
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return "Please enter your password";
+                  }
+                  if (value.length < 6) {
+                    return "Password must be at least 6 characters";
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: () {
+                  if (_formKey.currentState!.validate()) {
+                    FireBaseFunctions.signin(
+                      emailController.text,
+                      passwordController.text,
+                      onSuccess: (label) {
+                        pro.inituser();
+                        Navigator.pushNamedAndRemoveUntil(
+                          context,
+                          Home.routename,
+                              (route) => false,
+                          arguments: label,
+                        );
+                      },
+                      onError: (error) {
+                        showDialog(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                            title: const Text("Error"),
+                            content: Text(error.toString()),
+                            actions: [
+                              ElevatedButton(
+                                onPressed: () => Navigator.pop(context),
+                                child: const Text("OK"),
+                              )
+                            ],
+                          ),
+                        );
+                      },
+                    );
+                  }
+                },
+                child: const Text('Login'),
+              ),
+            ],
+          ),
         ),
       ),
       bottomNavigationBar: InkWell(
